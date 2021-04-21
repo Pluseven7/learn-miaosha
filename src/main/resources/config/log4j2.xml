@@ -8,6 +8,7 @@
         <Property name="displayName">EurekaServer</Property>
     </Properties>
     <Appenders>
+        <!-- 控制台追加器，需要在AppenderRef中引用-->
         <Console name="console" target="SYSTEM_OUT" follow="true">
             <PatternLayout>
                 <pattern>${pattern}</pattern>
