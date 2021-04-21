@@ -2,7 +2,7 @@ package com.hjq.common.utils;
 
 /**
  * <pre>
- *   描述:TODO
+ *   描述:请求封装
  * </pre>
  *
  * @author hjq

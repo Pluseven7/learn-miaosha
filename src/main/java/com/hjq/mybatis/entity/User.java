@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.util.Date;
 
 @Data
 @AllArgsConstructor
@@ -15,21 +16,18 @@ public class User implements Serializable {
 
     private Integer id;
 
-    private String name;
+    private String loginName;
 
-    public Integer getId() {
-        return id;
-    }
+    private String password;
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+    private String nickname;
 
-    public String getName() {
-        return name;
-    }
+    private String salt;
 
-    public void setName(String name) {
-        this.name = name == null ? null : name.trim();
-    }
+    private Date registerTime;
+
+    private Date last_login_date;
+
+    private Integer status;
+
 }

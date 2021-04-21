@@ -28,10 +28,12 @@ public class TryController {
         return ResponseEntity.ok("Hi:"+name);
     }
 
-    @ApiImplicitParam(name = "name",value = "姓名",required = true)
+    @ApiImplicitParam(name = "id",value = "主键id",required = true)
     @ApiOperation(value = "测试2")
     @GetMapping("/select")
     public HttpResponseBody selectAllUser(@RequestParam Integer id){
         return new HttpResponseBody(Code.SUCCESS.getCode(),userService.getById(id).toString());
     }
+
+
 }
