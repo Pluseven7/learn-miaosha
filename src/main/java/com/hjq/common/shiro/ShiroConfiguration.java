@@ -93,9 +93,9 @@ public class ShiroConfiguration {
     //自定义realm
     @Bean
     public ShiroRealm shiroRealm() {
-        ShiroRealm customRealm = new ShiroRealm();
-        customRealm.setCredentialsMatcher(hashedCredentialsMatcher());
-        return customRealm;
+        ShiroRealm shiroRealm = new ShiroRealm();
+        shiroRealm().setCredentialsMatcher(hashedCredentialsMatcher());
+        return shiroRealm();
     }
 
     //自定义session管理器

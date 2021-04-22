@@ -1,5 +1,6 @@
 package com.hjq.controller;
 
+import com.hjq.common.SysException;
 import com.hjq.common.utils.HttpResponseBody;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -15,9 +16,10 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-@Api(tags = "登录")
+@Api(tags = "用户账号")
 @RestController
-public class LoginController {
+public class UserController {
+
 
 
     @ApiImplicitParams({
@@ -39,7 +41,7 @@ public class LoginController {
             map.put("session_id", sessionId);
             map.put("code", HttpResponseBody.successResponse().getCode());
             return map;
-        }catch (Exception e){
+        }catch (SysException e){
             map.clear();
             e.printStackTrace();
             map.put("message", HttpResponseBody.failResponse(e).getMsg());

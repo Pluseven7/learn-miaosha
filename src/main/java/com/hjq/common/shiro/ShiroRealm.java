@@ -2,13 +2,16 @@ package com.hjq.common.shiro;
 
 import com.hjq.mybatis.entity.User;
 import com.hjq.mybatis.service.UserService;
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.Permission;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.apache.shiro.subject.Subject;
 
 import javax.annotation.Resource;
 import javax.management.relation.Role;
@@ -46,14 +49,13 @@ public class ShiroRealm extends AuthorizingRealm {
     //验证
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authenticationToken) throws AuthenticationException {
-//        User user = service.findByLoginName(loginName);
-//        if(user==null||user.getPassword()==null||"".equals(user.getPassword())){
-//            return null;
-//        }
-//        return new SimpleAuthenticationInfo(user, user.getPassword(), this.getClass().getName());
-//    }
-    return null;
+        User user = service.findByLoginName(authenticationToken.getPrincipal().toString());
+        if(user==null||user.getPassword()==null||"".equals(user.getPassword())){
+            return null;
+        }
+        return new SimpleAuthenticationInfo(user, user.getPassword(), this.getClass().getName());
     }
 
-
 }
+
+
