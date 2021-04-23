@@ -28,7 +28,7 @@ public class TryController {
         return ResponseEntity.ok("Hi:"+name);
     }
 
-    @ApiImplicitParam(name = "id",value = "主键id",required = true)
+    @ApiImplicitParam(name = "id",value = "主键id",required = true,dataTypeClass = java.lang.Integer.class)
     @ApiOperation(value = "测试2")
     @GetMapping("/select")
     public HttpResponseBody selectAllUser(@RequestParam Integer id){

@@ -6,12 +6,12 @@ import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.crazycake.shiro.RedisCacheManager;
 import org.crazycake.shiro.RedisManager;
 import org.crazycake.shiro.RedisSessionDAO;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.apache.shiro.mgt.SecurityManager;
 
+import javax.annotation.Resource;
 import javax.servlet.Filter;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -20,9 +20,11 @@ import java.util.Map;
 @Configuration
 public class ShiroConfiguration {
 
+    @Resource
+    private RedisConfig redisConfig;
 
-    @Bean
-    public ShiroFilterFactoryBean shiroFilterFactoryBean(SecurityManager securityManager) {
+    @Bean(name = "shiroFilterFactoryBean")
+    public ShiroFilterFactoryBean shiroFilterFactoryBean(@Qualifier("securityManager")SecurityManager securityManager) {
 
         ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
         shiroFilterFactoryBean.setSecurityManager(securityManager);
@@ -57,29 +59,29 @@ public class ShiroConfiguration {
         filterMap.put("/**", "corsFilter");
 
         //登出过滤器
-        filterMap.put("", "logout");
+        filterMap.put("/", "logout");
 
         //匿名访问，无需的登录即可访问
-        filterMap.put("", "anon");
+        filterMap.put("/**", "anon");
 
         //需要登录才能访问的
-        filterMap.put("", "authc");
+        filterMap.put("/", "authc");
 
         //有相应角色才能访问的,例如管理员才能访问
-        filterMap.put("", "customRoles[admin,root]"); //这里对应上面自定义AuthorizationFilter的key
+        filterMap.put("/", "customRoles[admin,root]"); //这里对应上面自定义AuthorizationFilter的key
 
         //有相应权限才能访问的，例如有
-        filterMap.put("", "perms[*]");
+        filterMap.put("/", "perms[*]");
 
         //全局拦截，避免遗漏哪些路径，放到最下面，这里也是要求必须使用linkedhashmap的理由
-        filterMap.put("/**", "authc");
+        filterMap.put("/", "authc");
 
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterMap);
         return shiroFilterFactoryBean;
     }
 
     //安全管理器
-    @Bean
+    @Bean(name = "securityManager")
     public SecurityManager securityManager(RedisCacheManager redisCacheManager) {
         DefaultWebSecurityManager manager = new DefaultWebSecurityManager();
         //设置会话管理
@@ -94,9 +96,22 @@ public class ShiroConfiguration {
     //自定义realm
     @Bean
     public ShiroRealm shiroRealm() {
+//        ShiroRealm shiroRealm = new ShiroRealm();
+//        shiroRealm().setCredentialsMatcher(hashedCredentialsMatcher());
+//        return shiroRealm();
         ShiroRealm shiroRealm = new ShiroRealm();
-        shiroRealm().setCredentialsMatcher(hashedCredentialsMatcher());
-        return shiroRealm();
+        shiroRealm.setCachingEnabled(true);
+        //启用身份验证缓存，即缓存AuthenticationInfo信息，默认false
+        shiroRealm.setAuthenticationCachingEnabled(true);
+        //缓存AuthenticationInfo信息的缓存名称
+        shiroRealm.setAuthenticationCacheName("authenticationCache");
+        //启用授权缓存，即缓存AuthorizationInfo信息，默认false
+        shiroRealm.setAuthorizationCachingEnabled(true);
+        //缓存AuthorizationInfo信息的缓存名称
+        shiroRealm.setAuthorizationCacheName("authorizationCache");
+        //配置自定义密码比较器
+        //shiroRealm.setCredentialsMatcher(retryLimitHashedCredentialsMatcher());
+        return shiroRealm;
     }
 
     //自定义session管理器
@@ -111,13 +126,10 @@ public class ShiroConfiguration {
     @Bean
     public HashedCredentialsMatcher hashedCredentialsMatcher() {
         HashedCredentialsMatcher hashedCredentialsMatcher = new HashedCredentialsMatcher();
-        hashedCredentialsMatcher.setHashAlgorithmName("md5");
-        hashedCredentialsMatcher.setHashIterations(2);
+        hashedCredentialsMatcher.setHashAlgorithmName("SHA-1");
+        hashedCredentialsMatcher.setHashIterations(1014);
         return hashedCredentialsMatcher;
     }
-
-    @Autowired
-    private RedisConfig redisConfig;
 
     //缓存管理
     @Bean
@@ -126,9 +138,10 @@ public class ShiroConfiguration {
         redisManager.setDatabase(redisConfig.getDatabase());
         redisManager.setHost(redisConfig.getHost());
         redisManager.setPort(redisConfig.getPort());
-        redisManager.setPassword(redisConfig.getPassword());
+//        redisManager.setPassword(redisConfig.getPassword());
         return redisManager;
     }
+
 
     //cache管理器
     @Bean
