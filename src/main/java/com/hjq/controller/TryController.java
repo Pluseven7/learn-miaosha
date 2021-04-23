@@ -6,7 +6,9 @@ import com.hjq.mybatis.mapper.MiaoshaUserMapper;
 import com.hjq.mybatis.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.crypto.hash.Sha1Hash;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -35,5 +37,17 @@ public class TryController {
         return new HttpResponseBody(Code.SUCCESS.getCode(),userService.getById(id).toString());
     }
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "oldPwd",value = "旧密码",required = true,dataTypeClass = java.lang.String.class),
+            @ApiImplicitParam(name = "salt",value = "私盐",required = true,dataTypeClass = java.lang.String.class),
+
+    })
+    @ApiOperation(value = "密码转换")
+    @GetMapping("/getpwd")
+    public HttpResponseBody Pwd(@RequestParam String oldPwd,String salt){
+        String Salt = "";
+        Sha1Hash sha1Hash = new Sha1Hash(oldPwd, salt + Salt, 1014);
+        return HttpResponseBody.successResponse(Code.SUCCESS.getMsg(),sha1Hash.toHex());
+    }
 
 }

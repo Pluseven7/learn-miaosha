@@ -50,4 +50,13 @@ public class UserController {
         }
     }
 
+
+    @ApiImplicitParam(name = "register",value = "注册信息",type = "body",required = true,dataTypeClass = java.lang.String.class)
+    @ApiOperation(value = "注册")
+    @PostMapping("/register")
+    @ResponseBody
+    public HttpResponseBody userRegister(@RequestBody ){
+        return
+    }
+
 }
