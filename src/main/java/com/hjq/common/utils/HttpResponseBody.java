@@ -76,7 +76,7 @@ public class HttpResponseBody<D> implements Serializable {
      * </pre>
      *
      * @param e 异常栈
-     * @return com.gda.utils.HttpResponseBody
+     * @return com.hjq.common.utils.HttpResponseBody
      * @author hjq
      *
      */
@@ -95,7 +95,7 @@ public class HttpResponseBody<D> implements Serializable {
             //把异常消息的小尾巴去掉(后面那一截英文)
             if (errMessage != null) {
                 //切了之后长这样：此手机号码已经被注册\n
-                errMessage = errMessage.split("com.gda.utils")[0].trim();
+                errMessage = errMessage.split("com.hjq.common.ls")[0].trim();
             }
             return new HttpResponseBody(code, errMessage);
         } else if (e.getCause() instanceof SysException) {
@@ -111,6 +111,17 @@ public class HttpResponseBody<D> implements Serializable {
         }
         return new HttpResponseBody(Code.ERROR.getCode(), Code.ERROR.getMsg());
     }
+
+    /**
+     * <pre>
+     *      功能描述: 重定向
+     * </pre>
+     *
+     * @param
+     * @return com.hjq.common.utils.HttpResponseBody
+     * @author hjq
+     *
+     */
 
 
     public int getCode() {

@@ -54,7 +54,7 @@ public enum Code {
 
     //业务级别错误码
     USER_LOGIN_ERROR(501001,"用户名或密码错误"),
-    ;
+    USER_REGISTER_ERROR(501002,"注册失败");
 
     private int code;
 
