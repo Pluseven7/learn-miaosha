@@ -38,6 +38,7 @@ public class UserController {
     public Map login(String loginName, String password){
         Map<String,Object> map = new HashMap<>();
         Subject subject= SecurityUtils.getSubject();
+        subject.getPrincipals();
         UsernamePasswordToken token=new UsernamePasswordToken(loginName, password);
         try{
             subject.login(token);
@@ -57,18 +58,18 @@ public class UserController {
     }
 
 
-    @ApiImplicitParam(name = "register",value = "注册信息",type = "body",required = true,dataTypeClass = java.lang.String.class)
-    @ApiOperation(value = "注册")
-    @PostMapping("/register")
-    @ResponseBody
-    public String userRegister(@RequestBody UserRegisterVo userRegisterVo){
-        String loginName = userRegisterVo.getLoginName();
-        String password = userRegisterVo.getPassword();
-        if(userService.userRegister(userRegisterVo)){
-            return "redirect:login";
-        }else {
-            return Code.USER_REGISTER_ERROR.getMsg();
-        }
-    }
+//    @ApiImplicitParam(name = "register",value = "注册信息",type = "body",required = true,dataTypeClass = java.lang.String.class)
+//    @ApiOperation(value = "注册")
+//    @PostMapping("/register")
+//    @ResponseBody
+//    public String userRegister(@RequestBody UserRegisterVo userRegisterVo){
+//        String loginName = userRegisterVo.getLoginName();
+//        String password = userRegisterVo.getPassword();
+//        if(userService.userRegister(userRegisterVo)){
+//            return "redirect:login";
+//        }else {
+//            return Code.USER_REGISTER_ERROR.getMsg();
+//        }
+//    }
 
 }

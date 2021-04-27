@@ -20,7 +20,7 @@ public interface UserMapper extends BaseMapper<User> {
             + "(loginName,password,nickname,email,salt,registerTime,status)"
             + " VALUES "
             + "<foreach collection='userRegisterVo' item='user' index='index' separator=',' >"
-            + "</foreach>"+"/<script>"
+            + "</foreach>"+" </script>"
     )
     boolean userRegister(UserRegisterVo userRegisterVo);
 }
