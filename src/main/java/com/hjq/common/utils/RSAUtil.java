@@ -10,23 +10,23 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 
 public class RSAUtil {
-    //生成秘钥对
-    protected static KeyPair getKeyPair() throws Exception {
+    //生成秘钥对 pro
+    public static KeyPair getKeyPair() throws Exception {
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
         keyPairGenerator.initialize(2048);
         KeyPair keyPair = keyPairGenerator.generateKeyPair();
         return keyPair;
     }
 
-    //获取公钥(Base64编码)
-    protected static String getPublicKey(KeyPair keyPair){
+    //获取公钥(Base64编码) pro
+    public static String getPublicKey(KeyPair keyPair){
         PublicKey publicKey = keyPair.getPublic();
         byte[] bytes = publicKey.getEncoded();
         return byte2Base64(bytes);
     }
 
-    //获取私钥(Base64编码)
-    protected static String getPrivateKey(KeyPair keyPair){
+    //获取私钥(Base64编码) pro
+    public static String getPrivateKey(KeyPair keyPair){
         PrivateKey privateKey = keyPair.getPrivate();
         byte[] bytes = privateKey.getEncoded();
         return byte2Base64(bytes);
@@ -58,6 +58,22 @@ public class RSAUtil {
         return bytes;
     }
 
+    //公钥解密
+    public static byte[] publicDecrypt(byte[] content, PublicKey publicKey) throws Exception{
+        Cipher cipher = Cipher.getInstance("RSA");
+        cipher.init(Cipher.DECRYPT_MODE, publicKey);
+        byte[] bytes = cipher.doFinal(content);
+        return bytes;
+    }
+
+    //私钥加密
+    public static byte[] privateEncrypt(byte[] content, PrivateKey privateKey) throws Exception{
+        Cipher cipher = Cipher.getInstance("RSA");
+        cipher.init(Cipher.ENCRYPT_MODE, privateKey);
+        byte[] bytes = cipher.doFinal(content);
+        return bytes;
+    }
+
     //私钥解密
     public static byte[] privateDecrypt(byte[] content, PrivateKey privateKey) throws Exception{
         Cipher cipher = Cipher.getInstance("RSA");
@@ -77,4 +93,6 @@ public class RSAUtil {
         BASE64Decoder decoder = new BASE64Decoder();
         return decoder.decodeBuffer(base64Key);
     }
+
+
 }

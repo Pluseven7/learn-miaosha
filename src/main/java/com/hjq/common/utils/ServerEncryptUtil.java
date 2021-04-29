@@ -1,6 +1,10 @@
 package com.hjq.common.utils;
 
 import com.alibaba.fastjson.JSONObject;
+import org.apache.shiro.crypto.hash.Hash;
+import org.apache.shiro.crypto.hash.Sha1Hash;
+import org.apache.shiro.crypto.hash.Sha256Hash;
+import org.apache.shiro.util.ByteSource;
 
 import javax.crypto.SecretKey;
 import java.security.PrivateKey;
@@ -26,18 +30,33 @@ public class ServerEncryptUtil {
     }
 
     //服务器解密APP的请求内容
-    public static String decrypt(String content,String secretKe) throws Exception{
+    public static String decrypt(String content,String secretKey) throws Exception{
         JSONObject result = JSONObject.parseObject(content);
         String encryptAesKeyStr = (String) result.get("aesk");
         String encryptContent = (String) result.get("content");
 
         //将Base64编码后的Server私钥转换成PrivateKey对象
-        PrivateKey serverPrivateKey = RSAUtil.string2PrivateKey(secretKe);
+        PrivateKey serverPrivateKey = RSAUtil.string2PrivateKey(secretKey);
         //用Server私钥解密AES秘钥
         byte[] aesKeyBytes = RSAUtil.privateDecrypt(RSAUtil.base642Byte(encryptAesKeyStr), serverPrivateKey);
         SecretKey aesKey = AESUtil.loadKeyAES(new String(aesKeyBytes));
         //用AES秘钥解密请求内容
         byte[] request = AESUtil.decryptAES(RSAUtil.base642Byte(encryptContent), aesKey);
         return new String(request);
+    }
+
+    //生成签名（内容+发送方信息的hash散列结果用私钥加密，用公钥解密，比对是否一致）
+    public static String createSignature(String content,String senderAddr,String secretKey) throws Exception {
+        Sha1Hash sha1Hash = new Sha1Hash(content+"&&"+senderAddr,null,1014);
+        byte[] hashContent = sha1Hash.getBytes();
+        byte[] digest = RSAUtil.privateEncrypt(hashContent,RSAUtil.string2PrivateKey(secretKey))
+        return digest.toString();
+    }
+
+    //获取签名并比对
+    public static String getSignature(String content,String senderAddr,String digest,String secretKey){
+        Sha1Hash sha1Hash = new Sha1Hash(content+"&&"+senderAddr,null,1014);
+        byte[] hashContent = sha1Hash.getBytes();
+        byte[] RSAUtil.publicEncrypt(aesKeyStr.getBytes(), serverPublicKey)
     }
 }
