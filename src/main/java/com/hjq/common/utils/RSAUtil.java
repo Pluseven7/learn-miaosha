@@ -1,15 +1,24 @@
 package com.hjq.common.utils;
 
+import org.apache.shiro.codec.Base64;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.io.IOException;
 import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Arrays;
 
 public class RSAUtil {
+
+    private static int MAX_ENCRYPT_BLOCK = 127;//最大加密字节数
+
+
     //生成秘钥对 pro
     public static KeyPair getKeyPair() throws Exception {
         KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
@@ -62,7 +71,7 @@ public class RSAUtil {
     public static byte[] publicDecrypt(byte[] content, PublicKey publicKey) throws Exception{
         Cipher cipher = Cipher.getInstance("RSA");
         cipher.init(Cipher.DECRYPT_MODE, publicKey);
-        byte[] bytes = cipher.doFinal(content);
+        byte[] bytes = cipher.doFinal(content,0,256);
         return bytes;
     }
 
@@ -94,5 +103,23 @@ public class RSAUtil {
         return decoder.decodeBuffer(base64Key);
     }
 
+    private static byte[] cut(byte[] content,Cipher cipher) throws NoSuchPaddingException, NoSuchAlgorithmException, BadPaddingException, IllegalBlockSizeException {
+        int inputLength = content.length;
+        int offSet = 0;
+        byte[] resultBytes = {};
+        byte[] cache = {};
+        while (inputLength - offSet > 0) {
+            if (inputLength - offSet > MAX_ENCRYPT_BLOCK) {
+                cache = cipher.doFinal(content, offSet, MAX_ENCRYPT_BLOCK);
+                offSet += MAX_ENCRYPT_BLOCK;
+            } else {
+                cache = cipher.doFinal(content, offSet, inputLength - offSet);
+                offSet = inputLength;
+            }
+            resultBytes = Arrays.copyOf(resultBytes, resultBytes.length + cache.length);
+            System.arraycopy(cache, 0, resultBytes, resultBytes.length - cache.length, cache.length);
+        }
+        return resultBytes;
+    }
 
 }

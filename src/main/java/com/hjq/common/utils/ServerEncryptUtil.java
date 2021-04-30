@@ -7,8 +7,11 @@ import org.apache.shiro.crypto.hash.Sha256Hash;
 import org.apache.shiro.util.ByteSource;
 
 import javax.crypto.SecretKey;
+import java.lang.reflect.Array;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.Arrays;
+
 
 public class ServerEncryptUtil {
 
@@ -49,14 +52,23 @@ public class ServerEncryptUtil {
     public static String createSignature(String content,String senderAddr,String secretKey) throws Exception {
         Sha1Hash sha1Hash = new Sha1Hash(content+"&&"+senderAddr,null,1014);
         byte[] hashContent = sha1Hash.getBytes();
-        byte[] digest = RSAUtil.privateEncrypt(hashContent,RSAUtil.string2PrivateKey(secretKey))
-        return digest.toString();
+        byte[] digest = RSAUtil.privateEncrypt(hashContent,RSAUtil.string2PrivateKey(secretKey));
+        return RSAUtil.byte2Base64(digest).replaceAll("\r\n", "");
     }
 
     //获取签名并比对
-    public static String getSignature(String content,String senderAddr,String digest,String secretKey){
+    public static String getSignature(String content,String senderAddr,String digest,String secretKey) throws Exception {
         Sha1Hash sha1Hash = new Sha1Hash(content+"&&"+senderAddr,null,1014);
         byte[] hashContent = sha1Hash.getBytes();
-        byte[] RSAUtil.publicEncrypt(aesKeyStr.getBytes(), serverPublicKey)
+        digest.replaceAll("\r\n", "");
+        byte[] sign= RSAUtil.publicDecrypt(digest.getBytes(), RSAUtil.string2PublicKey(secretKey));
+        JSONObject result = new JSONObject();
+        if(Arrays.equals(hashContent,sign)){
+            result.put("sign:",RSAUtil.byte2Base64(sign).replaceAll("\r\n", ""));
+            result.put("0","通过签名");
+        }else {
+            result.put("1", "签名失败");
+        }
+        return result.toString();
     }
 }
